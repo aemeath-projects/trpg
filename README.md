@@ -3,6 +3,8 @@
 骰娘规则引擎——掷骰、CoC/D&D 判定、人物生成、日志状态机，纯函数，双端可用。
 
 ![NPM Version](https://img.shields.io/npm/v/%40aemeath-projects%2Ftrpg?style=for-the-badge)
+![CI Status](https://img.shields.io/github/actions/workflow/status/aemeath-projects/trpg/ci.yml?style=for-the-badge)
+![Codecov](https://img.shields.io/codecov/c/github/aemeath-projects/trpg?style=for-the-badge)
 ![License](https://img.shields.io/github/license/aemeath-projects/trpg?style=for-the-badge)
 
 ## 这是什么
