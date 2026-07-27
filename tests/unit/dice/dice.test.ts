@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest'
 
-import { DiceExpressionError, maxOfExpression, rollDie, rollExpression } from '../../../src/dice'
+import {
+  DiceExpressionError,
+  evaluateTokens,
+  maxOfExpression,
+  rollDie,
+  rollExpression,
+  tokenize,
+} from '../../../src/dice'
 import type { RandomSource } from '../../../src/types'
 
 /** 构造确定性 rng：按顺序返回给定的 [0,1) 浮点值序列。 */
@@ -175,5 +182,55 @@ describe('maxOfExpression', () => {
   it('含乘法和加法的复合表达式最大值', () => {
     // 2d6*3 + 4 → (2*6)*3 + 4 = 36+4 = 40
     expect(maxOfExpression('2d6*3+4')).toBe(40)
+  })
+
+  it('纯数字表达式的最大值应返回该数字', () => {
+    expect(maxOfExpression('5')).toBe(5)
+  })
+})
+
+describe('rollExpression — 纯数字常量', () => {
+  it('应返回数字常量本身，不产生骰子记录', () => {
+    const result = rollExpression('5', fixedSequence([]))
+    expect(result.total).toBe(5)
+    expect(result.rolls).toEqual([])
+  })
+})
+
+describe('rollExpression — 省略前导数字的骰子', () => {
+  it('d6 等价于 1d6', () => {
+    const result = rollExpression('d6', fixedSequence([0.5]))
+    expect(result.total).toBe(4)
+    expect(result.rolls).toEqual([4])
+  })
+
+  it('d% 等价于 1d100', () => {
+    const result = rollExpression('d%', fixedSequence([0.63]))
+    expect(result.total).toBe(64)
+  })
+})
+
+describe('rollExpression — 缺少运算符', () => {
+  it('连续操作数之间缺少运算符应报错', () => {
+    // "1d6 2d6" 两个骰子 Token 之间没有运算符
+    expect(() => rollExpression('1d6 2d6', fixedSequence([0.5, 0.5]))).toThrow(/缺少运算符/u)
+  })
+})
+
+describe('tokenize', () => {
+  it('应正确解析无前导数字的 d6', () => {
+    const tokens = tokenize('d6')
+    expect(tokens).toEqual([{ type: 'dice', count: 1, sides: 6 }])
+  })
+
+  it('应正确解析 d%', () => {
+    const tokens = tokenize('d%')
+    expect(tokens).toEqual([{ type: 'dice', count: 1, sides: 'percent' }])
+  })
+})
+
+describe('evaluateTokens', () => {
+  it('空 Token 序列应报错', () => {
+    expect(() => evaluateTokens([], Math.random)).toThrow(/骰子表达式不能为空/u)
   })
 })

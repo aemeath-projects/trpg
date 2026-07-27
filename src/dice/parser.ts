@@ -1,26 +1,10 @@
 /**
  * 骰子表达式词法分析器。
  *
- * 手写字符扫描器，将骰子表达式字符串（如 `"3d6+2"`、`"4d6kh3+1d%"`）解析为 Token 序列。
+ * 手写字符扫描器，将骰子表达式字符串解析为 Token 序列。
  *
- * ## 支持的语法
- *
- * | 语法 | 示例 | 说明 |
- * |------|------|------|
- * | NdM | `3d6`, `1d20` | 投 N 个 M 面骰 |
- * | d% | `1d%`, `d%` | 百分骰（等价 1d100） |
- * | + | `3d6+2` | 加法 |
- * | - | `2d6-1` | 减法 |
- * | * | `2*3d6` | 乘法（中文乘号也支持） |
- * | kh | `4d6kh3` | 取最高的 N 个（keep highest） |
- * | kl | `4d6kl3` | 取最低的 N 个（keep lowest） |
- *
- * ## 不支持
- *
- * - 括号分组
- * - 除法
- * - 单目负号（如 `-3d6`）
- * - Fudge/Fate 骰子（dF）
+ * 支持语法：NdM 标准骰、d% 百分骰、+/- 加减、* 乘法（含中文乘号 ×）、
+ * kh/kl 取高取低。不支持括号、除法、单目负号、Fudge/Fate 骰。
  */
 
 /** 骰子表达式解析/求值过程中抛出的错误类型。 */
@@ -34,9 +18,9 @@ export class DiceExpressionError extends Error {
 /**
  * 骰子 Token：表示一次掷骰操作。
  *
- * @example `{ type: 'dice', count: 3, sides: 6 }` 表示 `3d6`
- * @example `{ type: 'dice', count: 4, sides: 6, keep: { mode: 'h', count: 3 } }` 表示 `4d6kh3`
- * @example `{ type: 'dice', count: 1, sides: 'percent' }` 表示 `d%`
+ * 示例：{ type: 'dice', count: 3, sides: 6 } 即 3d6；
+ * { type: 'dice', count: 4, sides: 6, keep: { mode: 'h', count: 3 } } 即 4d6kh3；
+ * { type: 'dice', count: 1, sides: 'percent' } 即 d%。
  */
 export interface DiceToken {
   type: 'dice'
@@ -55,7 +39,7 @@ export interface NumberToken {
   value: number
 }
 
-/** 运算符 Token：`+`、`-`、`*`（含中文乘号）。 */
+/** 运算符 Token：+、-、*（含中文乘号 ×）。 */
 export interface OpToken {
   type: 'plus' | 'minus' | 'star'
 }
@@ -64,10 +48,7 @@ export interface OpToken {
 export type Token = DiceToken | NumberToken | OpToken
 
 /**
- * 判断字符是否为十进制数字（'0'~'9'）。
- *
- * @param c - 待检查的字符
- * @returns 是数字字符则返回 `true`
+ * 判断字符是否为十进制数字。
  */
 function isDigit(c: string): boolean {
   return c >= '0' && c <= '9'
@@ -76,17 +57,8 @@ function isDigit(c: string): boolean {
 /**
  * 将骰子表达式字符串解析为 Token 序列。
  *
- * ## 解析流程
- *
- * 1. 跳过空白字符（空格/制表符）
- * 2. 识别运算符 `+` `-` `*` (U+00D7)
- * 3. 识别数字前缀 → 若紧跟 `d`/`D` 则为骰子 Token，否则为数字 Token
- * 4. 骰子 Token 后可选 `kh`/`kl` + 数字 作为取高/取低修饰
- * 5. `d%` 识别为百分骰
- *
- * ## 错误处理
- *
- * 遇到无法识别的字符或语法错误时抛出 {@link DiceExpressionError}。
+ * 解析流程：跳过空白 → 识别运算符 + - * × → 识别数字前缀，若紧跟 d/D 则为骰子 Token，
+ * 否则为数字 Token → 骰子后可选 kh/kl + 数字作为取高取低修饰 → d% 识别为百分骰。
  *
  * @param expr - 骰子表达式字符串
  * @returns 解析后的 Token 序列

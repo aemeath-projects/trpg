@@ -1,10 +1,7 @@
 /**
  * 疯狂症状随机抽取。
  *
- * 提供两种疯狂表：
- * - **即时症状（ti）**：d10 等概率随机抽取一条短期/即时疯狂表现
- * - **总结症状（li）**：d100 分段加权抽取一条长期/总结疯狂表现
- *
+ * 提供即时症状（d10 等概率）和总结症状（d100 分段加权）两张表。
  * 内容自撰改编，不逐字引用规则书原文。
  */
 
@@ -41,9 +38,6 @@ const SUMMARY_MADNESS_TABLE: readonly { max: number; text: string }[] = [
 
 /**
  * 从即时疯狂表随机抽取一条症状（d10 等概率）。
- *
- * @param rng - 随机数源，默认 `Math.random`
- * @returns 一条即时疯狂症状的描述文本
  */
 export function drawInstantMadness(rng: RandomSource = Math.random): string {
   return draw(INSTANT_MADNESS_TABLE, 1, rng)[0]
@@ -52,12 +46,7 @@ export function drawInstantMadness(rng: RandomSource = Math.random): string {
 /**
  * 从总结疯狂表按 d100 分段加权抽取一条症状。
  *
- * 先掷 1d100，根据结果落入的分段区间确定症状。
- * 各分段权重由 {@link SUMMARY_MADNESS_TABLE} 的 `max` 字段定义。
- *
- * @param rng - 随机数源，默认 `Math.random`
- * @returns 一条总结疯狂症状的描述文本
- * @throws {Error} 掷骰结果无法匹配任何分段时抛出（理论上不会发生）
+ * @throws {Error} 掷骰结果无法匹配任何分段时抛出
  */
 export function drawSummaryMadness(rng: RandomSource = Math.random): string {
   const roll = Math.floor(rng() * 100) + 1

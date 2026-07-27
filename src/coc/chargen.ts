@@ -1,14 +1,9 @@
 /**
  * CoC 人物生成器。
  *
- * 生成调查员的基础属性：8 项特征（STR/CON/SIZ/DEX/APP/EDU/INT/POW）
- * 采用标准 CoC 掷骰公式（3d6×5 或 2d6×5+30），并派生 HP、体格、伤害加值、MOV 等属性。
- *
- * ## 规则差异
- *
- * - **CoC 7 版**：完整属性集（HP + 体格 + 伤害加值 + MOV=8 固定）
- * - **CoC 6 版**：仅生成 8 项基础属性和 HP
- * - STR/SIZ/EDU 的派生规则在两版间完全一致
+ * 生成调查员基础属性：8 项特征（STR/CON/SIZ/DEX/APP/EDU/INT/POW），
+ * 采用标准 CoC 掷骰公式（3d6×5 或 2d6×5+30），并派生 HP、体格、伤害加值、MOV。
+ * CoC7 为完整属性集，CoC6 仅生成 8 项基础属性和 HP。
  */
 
 import { rollExpression } from '../dice'
@@ -51,21 +46,10 @@ function rollAttribute(name: string, rng: RandomSource): number {
 }
 
 /**
- * STR+SIZ 数值区间 → [体格, 伤害加值] 静态映射。
+ * STR+SIZ 数值区间 → 体格、伤害加值映射。
  *
- * 数值区间为公开规则事实，措辞自撰。
- *
- * | STR+SIZ | 体格 | 伤害加值 |
- * |---------|------|----------|
- * | 2–64    | -2   | -2       |
- * | 65–84   | -1   | -1       |
- * | 85–124  | 0    | 0        |
- * | 125–164 | 1    | +1D4     |
- * | 165–204 | 2    | +1D6     |
- * | 205+    | 3    | +2D6     |
- *
- * @param strPlusSiz - STR + SIZ 的总和
- * @returns 体格值和伤害加值表达式
+ * 区间：2-64 → build=-2, -2；65-84 → build=-1, -1；85-124 → build=0, 0；
+ * 125-164 → build=1, +1D4；165-204 → build=2, +1D6；205+ → build=3, +2D6。
  */
 export function lookupBuildAndDamageBonus(strPlusSiz: number): {
   build: number
@@ -85,17 +69,9 @@ export function lookupBuildAndDamageBonus(strPlusSiz: number): {
  * 按顺序生成 STR/CON/SIZ/DEX/APP/EDU/INT/POW 八项属性，
  * 根据规则版本派生 HP 和可选属性（体格/伤害加值/MOV）。
  *
- * @param ruleset - 规则版本：`'coc6'` 仅生成基础属性+HP，`'coc7'` 额外生成体格/伤害加值/MOV
- * @param rng - 随机数源，默认 `Math.random`
+ * @param ruleset - 规则版本：coc6 仅生成基础属性+HP，coc7 额外生成体格/伤害加值/MOV
+ * @param rng - 随机数源，默认 Math.random
  * @returns 人物生成结果
- *
- * @example
- * ```ts
- * const char = generateCharacter('coc7')
- * console.log(char.attributes.STR) // 如 65
- * console.log(char.hp)            // 如 12
- * console.log(char.damageBonus)   // 如 '+1D4'
- * ```
  */
 export function generateCharacter(
   ruleset: CocRuleset,

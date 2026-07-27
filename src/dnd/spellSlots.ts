@@ -1,13 +1,8 @@
 /**
- * D&D 5e 法术位（Spell Slots）纯计算模块。
+ * D&D 5e 法术位纯计算模块。
  *
- * 管理各环级法术位的当前可使用数量和上限，支持：
- * - 初始化（按每环上限设置）
- * - 调整上限（如升级获得新法术位）
- * - 长休恢复（所有法术位恢复至上限）
- * - 消耗/恢复法术位（单环增减，受上限和 0 下界约束）
- *
- * 这是一个纯函数式状态管理模块，不涉及施法者等级计算（等级→法术位数量的映射由消费方负责）。
+ * 管理各环级法术位的当前数量和上限，支持初始化、调整上限、长休恢复、消耗/恢复。
+ * 纯函数式状态管理，不涉及施法者等级计算（等级→法术位的映射由消费方负责）。
  */
 
 /** 法术位状态：按环级（如 "1"、"2"…"9"）记录当前数量和上限。 */
@@ -29,14 +24,7 @@ export function initSlots(maxByLevel: Record<string, number>): SpellSlotState {
 
 /**
  * 调整某个环级的法术位上限。
- *
- * 常用于升级场景（如从 2 环法术位变成 3 环法术位）。
- * 如果当前使用量超过新上限，会被截断到新上限值。
- *
- * @param state - 当前法术位状态
- * @param level - 环级标识（如 "1"、"2"）
- * @param max - 新的上限值
- * @returns 更新后的法术位状态（新对象，不修改原状态）
+ * 常用于升级场景。当前使用量超过新上限时会被截断。
  */
 export function setSlotMax(state: SpellSlotState, level: string, max: number): SpellSlotState {
   const existingCurrent = state[level].current
@@ -45,9 +33,6 @@ export function setSlotMax(state: SpellSlotState, level: string, max: number): S
 
 /**
  * 长休：将所有环级的法术位恢复至上限。
- *
- * @param state - 当前法术位状态
- * @returns 更新后的法术位状态（所有 current = max）
  */
 export function restSlots(state: SpellSlotState): SpellSlotState {
   const next: SpellSlotState = {}
@@ -58,15 +43,8 @@ export function restSlots(state: SpellSlotState): SpellSlotState {
 
 /**
  * 消耗或恢复指定环级的法术位。
+ * delta < 0 消耗（施法），delta > 0 恢复（特殊能力）。结果夹在 [0, max] 区间内。
  *
- * - `delta < 0`：消耗法术位（施法）
- * - `delta > 0`：恢复法术位（如特殊能力）
- * - 结果夹在 `[0, max]` 区间内
- *
- * @param state - 当前法术位状态
- * @param level - 环级标识（如 "1"、"2"）
- * @param delta - 变化量（正数为恢复，负数为消耗）
- * @returns 更新后的法术位状态（新对象，不修改原状态）
  * @throws {RangeError} 指定的环级未设置上限时抛出
  */
 export function adjustSlot(state: SpellSlotState, level: string, delta: number): SpellSlotState {

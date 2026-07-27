@@ -1,14 +1,11 @@
 /**
- * D&D 5e 技能-属性映射与技能调整值计算。
+ * D&D 5e 技能-属性映射与调整值计算。
  *
- * 包含完整的官方技能-属性关联表以及调整值计算公式。
- * 技能熟练度分为三个等级：无熟练、熟练（proficient）、专精（expertise）。
+ * 包含完整的官方技能-属性关联表。熟练度分三级：无熟练、熟练、专精。
  */
 
 /**
- * D&D 5e 技能 → 基础属性映射表（官方公开规则结构）。
- *
- * 共 18 项技能，每项关联六大属性之一。
+ * D&D 5e 技能 → 基础属性映射表（官方公开规则结构）。共 18 项。
  */
 export const SKILL_TABLE: Record<string, string> = {
   运动: '力量',
@@ -34,31 +31,14 @@ export const SKILL_TABLE: Record<string, string> = {
 /**
  * 计算技能调整值。
  *
- * ## 公式
+ * 公式：floor((属性值 - 10) / 2) + 熟练加值。
+ * 无熟练时熟练加值为 0，熟练时为 proficiencyBonus，专精时为 proficiencyBonus × 2。
  *
- * ```
- * 技能调整值 = floor((属性值 - 10) / 2) + 熟练加值
- * ```
- *
- * 其中熟练加值取决于熟练等级：
- * - **无熟练**：熟练加值 = 0
- * - **熟练**（proficient）：熟练加值 = proficiencyBonus
- * - **专精**（expertise）：熟练加值 = proficiencyBonus × 2
- *
- * @param attributeValue - 关联属性的值（如力量 16）
- * @param proficient - 是否拥有该技能的熟练项
- * @param expertise - 是否拥有该技能的专精项（专精时 proficient 也视为 true）
- * @param proficiencyBonus - 角色的熟练加值（由角色等级决定，如 3 级 = +2）
+ * @param attributeValue - 关联属性值
+ * @param proficient - 是否有熟练项
+ * @param expertise - 是否有专精项
+ * @param proficiencyBonus - 角色的熟练加值
  * @returns 最终技能调整值
- *
- * @example
- * ```ts
- * // 16 力量的 3 级战士，运动熟练
- * computeSkillModifier(16, true, false, 2)  // → 3 + 2 = 5
- *
- * // 16 敏捷的 5 级游荡者，隐匿专精
- * computeSkillModifier(16, true, true, 3)   // → 3 + 6 = 9
- * ```
  */
 export function computeSkillModifier(
   attributeValue: number,

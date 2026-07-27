@@ -1,3 +1,7 @@
 allowBuilds:
   esbuild: true
+  # 刻意保持 false：msgpackr-extract 是 msgpackr 的可选 native 加速器，编译它会让本包带上
+  # 平台相关的二进制产物，破坏 story/ 模块「Node + 浏览器双端纯 JS」的前提。
+  # msgpackr 在缺少该加速器时自动 fallback 到纯 JS 实现，编解码结果完全一致。
+  msgpackr-extract: false
   unrs-resolver: true

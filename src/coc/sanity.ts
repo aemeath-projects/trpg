@@ -1,9 +1,8 @@
 /**
- * CoC 理智检定（Sanity Check / San Check）。
+ * CoC 理智检定（Sanity Check）。
  *
- * 调查员遭遇神话事件时需进行理智检定：投 d100 vs 当前 SAN 值判定成功/失败等级，
- * 按结果扣除对应的理智表达式（成功时扣少量，失败时扣大量，大失败扣最大值），
- * 并结合"神话淬炼"状态计算实际损失。
+ * 投 d100 vs 当前 SAN 值判定成功/失败等级，按结果扣除对应理智值，
+ * 并结合神话淬炼状态计算实际损失。
  */
 
 import { maxOfExpression, rollDie, rollExpression } from '../dice'
@@ -29,44 +28,18 @@ export interface SanityCheckOutcome {
 /**
  * 执行一次理智检定。
  *
- * ## 检定流程
- *
- * 1. 投 d100，调用 {@link judgeCoCResult} 判定结果等级
- * 2. 根据结果等级计算原始 SAN 损失：
- *    - 大成功 / 极难成功 / 困难成功 / 普通成功：扣除成功表达式（`successExpr`）的掷骰结果
- *    - 失败：扣除失败表达式（`failExpr`）的掷骰结果
- *    - 大失败：扣除失败表达式的**理论最大值**（不掷骰，直接取最坏情况）
- * 3. 检查神话淬炼：`神话技能值 > 当前 SAN` 则触发，之后永久生效
- * 4. 淬炼状态下实际损失减半（向下取整）
- * 5. SAN 值不会低于 0
- *
- * ## 神话淬炼
- *
- * 一次触发即永久生效（`wasMythosHardened` 从 `false` 变为 `true` 后不会回退）。
- * 淬炼状态下所有后续 San Check 的 SAN 损失减半。
+ * 流程：投 d100 判定结果等级 → 根据等级计算原始 SAN 损失（成功扣 successExpr 结果，
+ * 失败扣 failExpr 结果，大失败扣 failExpr 理论最大值）→ 检查神话淬炼
+ * （mythosValue > currentSan 则触发，永久生效）→ 淬炼状态下损失减半 → SAN 不低于 0。
  *
  * @param currentSan - 检定前的 SAN 值
- * @param successExpr - 成功时扣除的骰子表达式（如 `"1d3"`、`"0"`）
- * @param failExpr - 失败时扣除的骰子表达式（如 `"1d6+1"`）
+ * @param successExpr - 成功时扣除的骰子表达式，如 "1d3"、"0"
+ * @param failExpr - 失败时扣除的骰子表达式，如 "1d6+1"
  * @param houserule - 大成功/大失败房规标识
- * @param mythosValue - 当前克苏鲁神话技能值，用于判定本次检定后是否新触发淬炼
+ * @param mythosValue - 当前克苏鲁神话技能值
  * @param wasMythosHardened - 检定前是否已处于神话淬炼状态
- * @param rng - 随机数源，默认 `Math.random`
+ * @param rng - 随机数源，默认 Math.random
  * @returns 理智检定结果
- *
- * @example
- * ```ts
- * const outcome = applySanityCheck(
- *   45,           // 当前 SAN
- *   '1d3',        // 成功扣 1d3
- *   '1d6+1',      // 失败扣 1d6+1
- *   'C3',         // C3 房规
- *   10,           // 神话 10
- *   false,        // 未淬炼
- * )
- * console.log(outcome.newSan)     // 检定后 SAN
- * console.log(outcome.loss)       // 实际损失
- * ```
  */
 export function applySanityCheck(
   currentSan: number,

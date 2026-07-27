@@ -3,14 +3,10 @@
  *
  * 覆盖常见中英/简繁/同义写法，将用户输入的属性名归一化为规范中文名。
  * 自撰扩展版本，不引入 SealDice 完整数据源。
- *
- * 应用场景：骰娘指令解析时，用户可能输入 `力量`、`STR`、`str` 等不同写法，
- * 需要统一映射到规范名称以进行后续判定。
  */
 
 /**
- * 同义词分组。每组第一个元素为规范名（canonical name），
- * 后续元素为该属性的所有已知别名。
+ * 同义词分组。每组第一个为规范名，后续为已知别名。
  */
 const SYNONYM_GROUPS: readonly (readonly string[])[] = [
   ['力量', 'STR', 'str'],
@@ -28,8 +24,7 @@ const SYNONYM_GROUPS: readonly (readonly string[])[] = [
 ]
 
 /**
- * 小写别名 → 规范名的查找表，由 {@link SYNONYM_GROUPS} 自动构建。
- * 每组中的所有别名（含规范名自身）均映射到规范名。
+ * 小写别名 → 规范名的查找表，由 SYNONYM_GROUPS 自动构建。
  */
 const CANONICAL_LOOKUP = new Map<string, string>()
 for (const group of SYNONYM_GROUPS) {
@@ -38,20 +33,10 @@ for (const group of SYNONYM_GROUPS) {
 }
 
 /**
- * 将属性/技能名归一化为规范中文名。
+ * 将属性/技能名归一化为规范中文名。大小写不敏感，未收录名称原样返回。
  *
- * 匹配规则：大小写不敏感，与同义词表比对后返回规范名。
- * 同义词表内未收录的名称原样返回（不做修改）。
- *
- * @param name - 用户输入的属性名（可能为中文、英文缩写、别名等）
- * @returns 规范化的属性名（表内命中）或原始输入（表内未收录）
- *
- * @example
- * ```ts
- * normalizeAttributeName('str')     // → '力量'
- * normalizeAttributeName('理智值')   // → '理智'
- * normalizeAttributeName('unknown') // → 'unknown'（未收录，原样返回）
- * ```
+ * @param name - 用户输入的属性名
+ * @returns 规范名（表内命中）或原始输入（未收录）
  */
 export function normalizeAttributeName(name: string): string {
   return CANONICAL_LOOKUP.get(name.toLowerCase()) ?? name

@@ -1,17 +1,9 @@
 /**
- * D&D 5e 死亡豁免（Death Saving Throws）状态机。
+ * D&D 5e 死亡豁免状态机。
  *
- * 当角色 HP 降为 0 时进入昏迷状态，每回合投一次 d20 进行死亡豁免检定。
- * 累计 3 次成功 → 稳定（stabilized），累计 3 次失败 → 死亡。
- *
- * ## 掷骰映射
- *
- * | d20 结果 | 效果 |
- * |----------|------|
- * | 1        | 大失败：失败 +2 |
- * | 2–9      | 失败：失败 +1 |
- * | 10–19    | 成功：成功 +1 |
- * | 20       | 大成功：恢复 1 HP，清空所有成功/失败计数 |
+ * HP 降为 0 时进入昏迷，每回合投 d20：
+ * 1 → 失败+2；2-9 → 失败+1；10-19 → 成功+1；20 → 恢复 1HP 并清空计数。
+ * 累计成功 3 次则稳定，累计失败 3 次则死亡。
  */
 
 import { rollDie } from '../dice'
@@ -49,15 +41,8 @@ export interface DeathSaveRollResult {
 /**
  * 执行一次死亡豁免掷骰并更新状态。
  *
- * 调用方应在每次掷骰后检查返回的 `outcome`：
- * - `'stabilized'` → 角色稳定，退出死亡豁免流程
- * - `'dead'` → 角色死亡
- * - `'critical_success'` → 角色恢复 1 HP 并苏醒
- * - 其他 → 继续下一轮死亡豁免
- *
- * @param state - 当前的死亡豁免状态
- * @param rng - 随机数源，默认 `Math.random`
- * @returns 掷骰结果和更新后的状态
+ * 调用方应按返回的 outcome 决定后续：
+ * stabilized → 稳定退出；dead → 死亡；critical_success → 恢复 1HP 苏醒；其他 → 继续。
  */
 export function applyDeathSaveRoll(
   state: DeathSaveState,
@@ -102,14 +87,8 @@ export function applyDeathSaveRoll(
 }
 
 /**
- * 判断昏迷（HP=0）状态下受到的伤害是否直接致死。
- *
- * D&D 5e 规则：当单次攻击造成的溢出伤害 ≥ 角色最大 HP 时，
- * 角色直接死亡，无需经过死亡豁免流程。
- *
- * @param overkillDamage - 溢出伤害量（将 HP 从 0 打到负值的那部分伤害）
- * @param hpMax - 角色最大 HP
- * @returns 是否触发即死
+ * 判断昏迷状态下受到的伤害是否直接致死。
+ * 溢出伤害 ≥ 最大 HP 时触发即死，无需经过死亡豁免流程。
  */
 export function isInstantDeath(overkillDamage: number, hpMax: number): boolean {
   return overkillDamage >= hpMax
@@ -117,12 +96,7 @@ export function isInstantDeath(overkillDamage: number, hpMax: number): boolean {
 
 /**
  * 昏迷状态下受到未致死的过量伤害，自动折算为一次死亡豁免失败。
- *
- * D&D 5e 规则：昏迷角色受到伤害时，自动获得一次死亡豁免失败。
- * 如果该次失败导致累计失败 ≥ 3，角色死亡。
- *
- * @param state - 当前的死亡豁免状态
- * @returns 更新后的状态及是否死亡
+ * 若失败累计 ≥3 则角色死亡。
  */
 export function applyDamageWhileUnconscious(state: DeathSaveState): {
   state: DeathSaveState

@@ -1,8 +1,6 @@
 /**
  * 骰点统计聚合模块。
- *
  * 输入检定记录数组，输出成功率等统计信息。
- * 可用于骰娘指令的 `.stat` 统计功能——分析一段时间内的检定表现。
  */
 
 import type { CheckResult } from '../types'
@@ -38,27 +36,8 @@ const SUCCESS_RESULTS = new Set<CheckResult>([
 /**
  * 对检定记录数组进行统计聚合。
  *
- * 统计维度：
- * - 总次数
- * - 成功次数及成功率
- * - 大成功次数
- * - 大失败次数
- *
- * @param records - 检定记录数组（可以是任意长度，包括空数组）
- * @returns 统计摘要；records 为空时 total=0, successRate=0
- *
- * @example
- * ```ts
- * const records = [
- *   { result: 'success' },
- *   { result: 'great_success' },
- *   { result: 'fail' },
- *   { result: 'hard_success' },
- * ]
- * const summary = summarize(records)
- * console.log(summary.successRate) // 0.75
- * console.log(summary.greatSuccessCount) // 1
- * ```
+ * 统计维度：总次数、成功次数及成功率、大成功次数、大失败次数。
+ * records 为空时 total=0, successRate=0。
  */
 export function summarize(records: readonly CheckRecord[]): CheckSummary {
   const total = records.length

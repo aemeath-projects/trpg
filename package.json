@@ -97,6 +97,10 @@
     "./log": {
       "types": "./dist/log/index.d.ts",
       "import": "./dist/log/index.js"
+    },
+    "./story": {
+      "types": "./dist/story/index.d.ts",
+      "import": "./dist/story/index.js"
     }
   },
   "devDependencies": {
@@ -119,5 +123,8 @@
     "typescript-eslint": "^8.65.0",
     "vitest": "^4.1.10"
   },
-  "dependencies": {}
+  "dependencies": {
+    "fflate": "^0.8.3",
+    "msgpackr": "^2.0.4"
+  }
 }

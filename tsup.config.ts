@@ -10,6 +10,7 @@ export default defineConfig({
     'src/decks/index.ts',
     'src/stats/index.ts',
     'src/log/index.ts',
+    'src/story/index.ts',
   ],
   outDir: 'dist',
   format: 'esm',
