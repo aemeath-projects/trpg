@@ -23,6 +23,11 @@ export interface SanityCheckOutcome {
   rollDetail: string
   /** 本次检定后是否处于神话淬炼状态 */
   mythosHardened: boolean
+  /**
+   * 损失骰的掷骰明细（如 "1D10=7"）。
+   * 大失败时为 failExpr 理论最大值说明（如 "1D10 最大值=10"）。
+   */
+  lossDetail: string
 }
 
 /**
@@ -58,10 +63,16 @@ export function applySanityCheck(
     result === 'hard_success' ||
     result === 'success'
 
-  const loss =
-    result === 'great_fail'
-      ? maxOfExpression(failExpr)
-      : rollExpression(isSuccess ? successExpr : failExpr, rng).total
+  let loss: number
+  let lossDetail: string
+  if (result === 'great_fail') {
+    loss = maxOfExpression(failExpr)
+    lossDetail = `${failExpr} 最大值=${String(loss)}`
+  } else {
+    const lossResult = rollExpression(isSuccess ? successExpr : failExpr, rng)
+    loss = lossResult.total
+    lossDetail = lossResult.detail
+  }
 
   const mythosHardened = wasMythosHardened || mythosValue > currentSan
   const effectiveLoss = mythosHardened ? Math.floor(loss / 2) : loss
@@ -73,5 +84,6 @@ export function applySanityCheck(
     loss: effectiveLoss,
     rollDetail: `D100=${String(roll)}/${String(currentSan)}`,
     mythosHardened,
+    lossDetail,
   }
 }

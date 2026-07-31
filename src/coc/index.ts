@@ -21,4 +21,5 @@ export { applyGrowthCheck } from './growth.js'
 
 export { rollBonusPenaltyD100 } from './bonusPenalty.js'
 
+export type { MadnessEntry } from './madness.js'
 export { drawInstantMadness, drawSummaryMadness } from './madness.js'

@@ -157,8 +157,12 @@ export function evaluateTokens(tokens: Token[], rng: RandomSource): DiceResult {
       product *= value
     }
     total += term.sign * product
+    const joined = partDetails.join('')
+    // 含乘法时追加最终乘积，避免 "3D6=[x,x,x]=15*5" 缺少 "=75"
+    const needsProduct = partDetails.includes('*')
+    const termStr = needsProduct ? `${joined}=${String(product)}` : joined
     const prefix = term.sign === -1 ? '-' : termDetails.length > 0 ? '+' : ''
-    termDetails.push(prefix + partDetails.join(''))
+    termDetails.push(prefix + termStr)
   }
 
   return { total, detail: termDetails.join(''), rolls: allRolls }

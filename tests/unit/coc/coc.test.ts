@@ -274,12 +274,16 @@ describe('rollBonusPenaltyD100', () => {
 })
 
 describe('madness', () => {
-  it('drawInstantMadness 应返回非空字符串', () => {
-    expect(drawInstantMadness(fixedSequence([0]))).toBeTruthy()
+  it('drawInstantMadness 应返回包含 name 和 description 的 MadnessEntry', () => {
+    const result = drawInstantMadness(fixedSequence([0]))
+    expect(result.name).toBeTruthy()
+    expect(result.description).toBeTruthy()
   })
   it('drawSummaryMadness 应按 d100 落在正确区间', () => {
-    expect(drawSummaryMadness(fixedSequence([0]))).toContain('失忆')
-    expect(drawSummaryMadness(fixedSequence([0.99]))).toContain('崩溃')
+    // rng=0 → roll=1，落在 max=10 区间 → 失忆症
+    expect(drawSummaryMadness(fixedSequence([0])).name).toBe('失忆症')
+    // rng=0.99 → roll=100，落在 max=100 区间 → 木僵
+    expect(drawSummaryMadness(fixedSequence([0.99])).name).toBe('木僵')
   })
   it('drawSummaryMadness 在 roll 超出区间时应抛出异常', () => {
     // rng=1.0 → roll=101，超出了 SUMMARY_MADNESS_TABLE 的 max=100 范围
