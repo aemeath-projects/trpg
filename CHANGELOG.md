@@ -2,6 +2,15 @@
 
 所有版本变更记录
 
+## [1.0.1](https://github.com/aemeath-projects/trpg/compare/v1.0.0...v1.0.1) (2026-07-31)
+
+### 新功能
+
+* **coc:** 疯狂症状结构化为 MadnessEntry，SAN 检定增加损失明细 ([95083a1](https://github.com/aemeath-projects/trpg/commit/95083a19cc9f3b267563aae92e688016429a0a1f))
+
+### 文档
+
+* **readme:** 新增 CI 状态与 Codecov 覆盖率徽章 ([09728f8](https://github.com/aemeath-projects/trpg/commit/09728f8122b56d800e6af361953584ab339663b9))
 ## [1.0.0](https://github.com/aemeath-projects/trpg/compare/v0.1.0...v1.0.0) (2026-07-27)
 
 ### 新功能

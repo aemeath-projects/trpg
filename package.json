@@ -1,6 +1,6 @@
 {
   "name": "@aemeath-projects/trpg",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "TRPG 骰娘规则引擎：无状态掷骰求值、CoC/D&D 规则判定、人物生成公式、日志状态机等纯函数集合",
   "type": "module",
   "main": "./dist/index.js",
