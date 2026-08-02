@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import {
+  ALIAS_ENTRIES,
   applyGrowthCheck,
   applySanityCheck,
   drawInstantMadness,
@@ -195,6 +196,25 @@ describe('normalizeAttributeName', () => {
   })
   it('未收录的名称应原样返回', () => {
     expect(normalizeAttributeName('手枪')).toBe('手枪')
+  })
+})
+
+describe('ALIAS_ENTRIES', () => {
+  it('每个别名都应能归一化到其规范名', () => {
+    for (const { alias, canonical } of ALIAS_ENTRIES) {
+      expect(normalizeAttributeName(alias)).toBe(canonical)
+    }
+  })
+  it('同一小写别名不应指向不同规范名', () => {
+    // STR/str、HP/hp 等大小写变体是合法同义词（指向同一规范名）；
+    // 关键约束是任一别名（大小写不敏感）必须能稳定归一到唯一规范名
+    const canonicalByAlias = new Map<string, string>()
+    for (const { alias, canonical } of ALIAS_ENTRIES) {
+      const key = alias.toLowerCase()
+      const existing = canonicalByAlias.get(key)
+      if (existing === undefined) canonicalByAlias.set(key, canonical)
+      else expect(existing).toBe(canonical)
+    }
   })
 })
 

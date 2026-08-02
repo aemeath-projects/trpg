@@ -84,6 +84,18 @@ for (const group of SYNONYM_GROUPS) {
 }
 
 /**
+ * 全部属性别名 → 规范名的扁平条目，由 SYNONYM_GROUPS 自动构建。
+ * 属性名同义词是 CoC 规则数据的一部分；此导出供调用方基于别名表构建
+ * 自己的索引（如消息解析层的前缀扫描）。
+ */
+export const ALIAS_ENTRIES: readonly { readonly alias: string; readonly canonical: string }[] =
+  SYNONYM_GROUPS.flatMap((group) => {
+    const canonical = group.at(0)
+    if (canonical === undefined) return []
+    return group.map((alias) => ({ alias, canonical }))
+  })
+
+/**
  * 将属性/技能名归一化为规范中文名。大小写不敏感，未收录名称原样返回。
  *
  * @param name - 用户输入的属性名

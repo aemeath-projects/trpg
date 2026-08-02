@@ -11,7 +11,7 @@ export { judgeCoCResult } from './houserules.js'
 export type { CocRuleset, CocCharacterResult } from './chargen.js'
 export { generateCharacter, lookupBuildAndDamageBonus } from './chargen.js'
 
-export { normalizeAttributeName } from './synonyms.js'
+export { ALIAS_ENTRIES, normalizeAttributeName } from './synonyms.js'
 
 export type { SanityCheckOutcome } from './sanity.js'
 export { applySanityCheck } from './sanity.js'
