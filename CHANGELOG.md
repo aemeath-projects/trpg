@@ -2,6 +2,11 @@
 
 所有版本变更记录
 
+## [1.0.2](https://github.com/aemeath-projects/trpg/compare/v1.0.1...v1.0.2) (2026-08-02)
+
+### 新功能
+
+* **coc:** 新增 ALIAS_ENTRIES 别名映射表导出，升级 lint-staged 与 msgpackr ([3fbb508](https://github.com/aemeath-projects/trpg/commit/3fbb5082220c3a3e6979c0d768323325f4fc0bc7))
 ## [1.0.1](https://github.com/aemeath-projects/trpg/compare/v1.0.0...v1.0.1) (2026-07-31)
 
 ### 新功能
