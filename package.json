@@ -12,7 +12,7 @@
   "engines": {
     "node": ">=24.17.0"
   },
-  "packageManager": "pnpm@11.16.0",
+  "packageManager": "pnpm@12.11.2",
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -110,7 +110,7 @@
     "@commitlint/cli": "^21.2.3",
     "@commitlint/config-conventional": "^21.2.3",
     "@eslint/js": "^10.0.1",
-    "@types/node": "^26.6.4",
+    "@types/node": "^26.6.5",
     "@vitest/coverage-v8": "^5.0.3",
     "commit-and-tag-version": "^13.2.1",
     "commitizen": "^4.3.2",
@@ -120,7 +120,7 @@
     "eslint-plugin-import-x": "^4.17.1",
     "husky": "^9.1.7",
     "lint-staged": "^17.6.0",
-    "prettier": "^3.9.9",
+    "prettier": "^3.9.10",
     "tsup": "^8.5.1",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.71.1",
