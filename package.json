@@ -12,7 +12,7 @@
   "engines": {
     "node": ">=24.22.1"
   },
-  "packageManager": "pnpm@12.14.0",
+  "packageManager": "pnpm@12.15.0",
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -107,8 +107,8 @@
     }
   },
   "devDependencies": {
-    "@commitlint/cli": "^21.2.3",
-    "@commitlint/config-conventional": "^21.2.3",
+    "@commitlint/cli": "^21.2.4",
+    "@commitlint/config-conventional": "^21.2.4",
     "@eslint/js": "^10.0.1",
     "@types/node": "^26.6.5",
     "@vitest/coverage-v8": "^5.0.5",
@@ -123,11 +123,11 @@
     "prettier": "^3.9.10",
     "tsup": "^9.0.0",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.71.2",
+    "typescript-eslint": "^8.72.0",
     "vitest": "^5.0.5"
   },
   "dependencies": {
     "fflate": "^0.8.3",
-    "msgpackr": "^2.1.0"
+    "msgpackr": "^2.1.2"
   }
 }
